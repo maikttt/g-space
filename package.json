@@ -1,0 +1,31 @@
+{
+  "name": "crimsonland",
+  "version": "1.0.0",
+  "description": "Crimsonland game",
+  "main": "index.js",
+  "scripts": {
+    "build:js": "gulp js",
+    "build:css": "gulp scss",
+    "build": "gulp build",
+    "watch:js": "webpack --watch",
+    "serve": "gulp serve"
+  },
+  "author": "Mihai Terenti <maikttt@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.26.12",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-csso": "^4.0.1",
+    "gulp-file-include": "^2.2.2",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-sass": "^4.1.0",
+    "html-webpack-plugin": "^4.4.1",
+    "ts-loader": "^8.0.3",
+    "typescript": "^4.0.2",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-stream": "^6.1.0"
+  }
+}
