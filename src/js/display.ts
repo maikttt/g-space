@@ -1,21 +1,35 @@
-import { IShape, IPosition, IDisplay, ICharacter, ILandscape, Position } from './base';
+import { IPosition, IDisplay, ICharacter, ILandscape, Position } from './base';
+import { Monster, Bullet } from './characters';
 
 const COLOR_DISPLAY = '#000000';
 
 export class Display implements IDisplay {
-  private context: any;
-  private position: IPosition;
+  public context: CanvasRenderingContext2D;
+  public position: IPosition;
 
-  constructor(context: any, position: IPosition) {
+  constructor(context: CanvasRenderingContext2D, position: IPosition) {
     this.context = context;
     this.setCenter(position);
   }
 
-  setCenter(position: IPosition): void {
-    const { context } = this;
-    const cx = position.x - context.canvas.width / 2;
-    const cy = position.y - context.canvas.height / 2;
-    this.position = new Position(cx, cy);
+  public getAbsoluteX(relativeX: number): number {
+    return relativeX + this.position.x - this.context.canvas.width  / 2;
+  }
+
+  public getAbsoluteY(relativeY: number): number {
+    return relativeY + this.position.y - this.context.canvas.height / 2;
+  }
+
+  private getRealativeX(absoluteX: number): number {
+    return absoluteX - (this.position.x - this.context.canvas.width / 2);
+  }
+
+  private getRealativeY(absoluteY: number): number {
+    return absoluteY - (this.position.y - this.context.canvas.height / 2);
+  }
+
+  public setCenter(position: IPosition): void {
+    this.position = new Position(position.x, position.y);
   }
 
   public clean(): void {
@@ -28,10 +42,28 @@ export class Display implements IDisplay {
 
   public drawCharacter(character: ICharacter): void {
     const { context } = this;
-    const { shape, position } = character;
-    context.drawImage(
-      shape.image, position.x - shape.w / 2 - this.position.x, position.y - shape.h / 2 - this.position.y, shape.w, shape.h
+    const { shape, position, direction } = character;
+    context.setTransform(
+      1, 0, 0, 1,
+      this.getRealativeX(position.x),
+      this.getRealativeY(position.y),
     );
+    context.rotate(direction.alpha);
+    if (character instanceof Bullet) {
+      // console.log(
+      //   position, this.position, shape,
+      //   direction.alpha * 180 / Math.PI,
+      //   [context.canvas.width / 2, context.canvas.height / 2],
+      // );
+    }
+    context.drawImage(
+      shape.image,
+      - shape.w / 2,
+      - shape.h / 2,
+      shape.w, shape.h
+    );
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.rotate(0);
   }
 
   public drawLandscape(landscape: ILandscape): void {

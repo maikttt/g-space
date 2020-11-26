@@ -1,47 +1,53 @@
+import makeGame from './game-factory';
 
-
-import makeGame from './make-game';
-
-const canvas = document.getElementById('display');
+const canvas = document.getElementById('display') as HTMLCanvasElement;
 const context = canvas.getContext('2d');
 
 const KEY_MAP = {
-  ArrowUp: 'moveUp',
-  ArrowDown: 'moveDown',
-  ArrowLeft: 'moveLeft',
-  ArrowRight: 'moveRight',
+  KeyW: 'moveUp',
+  KeyS: 'moveDown',
+  KeyA: 'moveLeft',
+  KeyD: 'moveRight',
+  Space: 'move',
 };
 
 Promise.all([
   'dist/img/field.jpg',
   'dist/img/defender.png',
+  'dist/img/defender-bullet.png',
   'dist/img/monster-0.png',
   'dist/img/monster-1.png',
   'dist/img/monster-2.png',
 ].map((src) => loadImage(src)))
-.then(([field, defender, ...monsters]) => {
+.then(([field, defender, bullet, ...monsters]) => {
   field = {
     img: field,
     w: field.width,
-    h: field.height
+    h: field.height,
   };
   defender = {
     img: defender,
-    w: 50,
-    h: 50,
+    w: 60,
+    h: 60,
     x: 0,
     y: 0
   };
+  bullet = {
+    img: bullet,
+    w: bullet.width,
+    h: bullet.height,
+    speed: 16,
+  }
   monsters = monsters.map((img) => {
     return {
-      img, w: 40, h: 40,
+      img, w: 60, h: 60,
       x: random(400) - 200,
       y: random(400) - 200,
       r: random(50)  + 50,
     };
   });
 
-  const game = makeGame(context, field, defender, monsters);
+  const game = makeGame(context, field, defender, monsters, bullet);
   game.run();
 
   /*
@@ -54,20 +60,32 @@ Promise.all([
   }));
   const app = game(context, monsters);
   app.redraw();
-
   */
   document.body.addEventListener('keydown', function(event) {
-    const action = event.key ? KEY_MAP[event.key] : undefined;
+    const action = event.key ? KEY_MAP[event.code] : undefined;
     if (action) {
       game.exec(action);
     }
   });
+
+  canvas.addEventListener('mousemove', function(event) {
+    game.exec('defenderChangeDir', event.layerX, event.layerY);
+  });
+  canvas.addEventListener('click', function(event) {
+    game.exec('shut');
+  });
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 })
 .catch((error) => {
   console.log(error);
 });
 
-
+function resizeCanvas() {
+  const { innerHeight, innerWidth } = window;
+  canvas.width = innerWidth - 20;
+  canvas.height = innerHeight - 20;
+}
 
 function loadImage(src: string) {
   return new Promise((resolve, reject) => {
@@ -86,3 +104,35 @@ function loadImage(src: string) {
 function random(max: number) {
   return Math.floor(Math.random() * max);
 }
+/*
+const canvas = document.getElementById('display');
+const context = canvas.getContext('2d');
+
+const image = new Image();
+image.onload = () => {
+  draw();
+};
+image.onerror = (err) => {
+  alert('error');
+};
+image.src = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.protectorfiresafety.com%2F11895-large_default%2Frestricted-area.jpg&f=1&nofb=1';
+
+function draw() {
+  context.beginPath();
+  context.rect(0, 0, 500, 500);
+  context.fill();
+
+  context.setTransform(1, 0, 0, 1, 200, 200);
+  context.rotate(Math.PI / 4);
+  context.drawImage(image, -75, -75, 150, 150);
+
+
+
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.rotate(0);
+  context.beginPath();
+  context.rect(195, 195, 10, 10);
+  context.fillStyle = 'yellow';
+  context.fill();
+}
+*/

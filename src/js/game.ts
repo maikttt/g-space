@@ -1,26 +1,68 @@
 
-import { IMonster, IDefender, IDisplay, ILandscape } from './base';
+import { IMonster, IDefender, IDisplay, ILandscape, IBullet, Position, Shape, Direction } from './base';
+import { Bullet } from './characters';
 
 export class Game {
   private display: IDisplay;
   private landscape: ILandscape;
   private defender: IDefender;
   private monsters: IMonster[];
+  private bullets: IBullet[];
 
   private _run_timer: any = false;
-  private delay: 50;
+  private delay: number = 50;
 
   constructor(display: IDisplay, landscape: ILandscape, defender: IDefender, monsters: IMonster[]) {
     this.display = display;
     this.landscape = landscape;
     this.defender = defender;
     this.monsters = monsters;
+    this.bullets = [];
+  }
+
+  public exec(event: string, ...args: any) {
+    const speed = 8;
+    switch (event) {
+      case 'shut':
+        this.bullets.push(this.defender.shut());
+        // console.log("Shut;");
+        break;
+      case 'moveUp':
+        this.defender.movePosition(0, -speed);
+        this.display.setCenter(this.defender.position);
+        break;
+      case 'moveDown':
+        this.defender.movePosition(0, speed);
+        this.display.setCenter(this.defender.position);
+        break;
+      case 'moveRight':
+        this.defender.movePosition(speed, 0);
+        this.display.setCenter(this.defender.position);
+        break;
+      case 'moveLeft':
+        this.defender.movePosition(-speed, 0);
+        this.display.setCenter(this.defender.position);
+        break;
+      case 'move':
+        this.defender.move(speed);
+        this.display.setCenter(this.defender.position);
+        break;
+      case 'defenderChangeDir':
+        this.defender.direction.setFromAbsoluteXY(
+          this.display.getAbsoluteX(args[0]) - this.defender.position.x,
+          this.display.getAbsoluteY(args[1]) - this.defender.position.y,
+        );
+        break;
+    }
+    this.redraw();
   }
 
   private draw() {
     const { display } = this;
-    display.setCenter(this.defender.position);
     display.drawLandscape(this.landscape);
+    this.bullets.forEach((bullet) => {
+      display.drawCharacter(bullet);
+    });
     display.drawCharacter(this.defender);
     this.monsters.forEach((monster) => {
       display.drawCharacter(monster);
@@ -32,30 +74,19 @@ export class Game {
     this.draw();
   }
 
-  public exec(event: string) {
-    const speed = 1;
+  private ticUpdate() {
     this.monsters.forEach((monster) => {
       monster.move();
     });
-    switch (event) {
-      case 'moveUp':
-        this.defender.move(0, -speed);
-        break;
-      case 'moveDown':
-        this.defender.move(0, speed);
-        break;
-      case 'moveRight':
-        this.defender.move(speed, 0);
-        break;
-      case 'moveLeft':
-        this.defender.move(-speed, 0);
-        break;
-    }
-    this.redraw();
+    this.bullets.forEach((bullet) => {
+      bullet.move();
+    });
+
   }
 
   public run() {
     this.abort();
+    this.ticUpdate();
     this.redraw();
     this._run_timer = setTimeout(() => {
       this._run_timer = false;
