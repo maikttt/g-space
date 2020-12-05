@@ -57,7 +57,7 @@ export interface IGun {
 }
 
 export interface IBullet extends ICharacter {
-  move(speed: number): void;
+  move(): void;
 }
 
 export class Position implements IPosition {
