@@ -1,5 +1,5 @@
 
-import { IMonster, IDefender, IDisplay, ILandscape, IBullet, Position, Shape, Direction, ICharacter } from './base';
+import { IMonster, IDefender, IDisplay, ILandscape, IBullet } from './base';
 import { Bullet } from './characters';
 import { charactersHaveCollision } from './collisions';
 

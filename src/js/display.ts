@@ -49,18 +49,14 @@ export class Display implements IDisplay {
       this.getRealativeY(position.y),
     );
     context.rotate(direction.alpha);
-    if (character instanceof Bullet) {
-      // console.log(
-      //   position, this.position, shape,
-      //   direction.alpha * 180 / Math.PI,
-      //   [context.canvas.width / 2, context.canvas.height / 2],
-      // );
-    }
+
     context.drawImage(
       shape.image,
-      - shape.w / 2,
-      - shape.h / 2,
-      shape.w, shape.h
+      shape.sx, shape.sy,
+      shape.sWidth, shape.sHeight,
+      - shape.dWidth / 2,
+      - shape.dHeight / 2,
+      shape.dWidth, shape.dHeight
     );
     context.setTransform(1, 0, 0, 1, 0, 0);
     context.rotate(0);
@@ -70,21 +66,26 @@ export class Display implements IDisplay {
     const { context } = this;
     const { width, height } = context.canvas;
     const { shape } = landscape;
-    const sx = drawFrom(this.position.x, shape.w);
-    const sy = drawFrom(this.position.y, shape.h);
+    const sx = drawFrom(this.position.x, shape.dWidth);
+    const sy = drawFrom(this.position.y, shape.dHeight);
 
     let _sx = sx;
     while (_sx < width) {
       let _sy = sy;
       while (_sy < height) {
-        context.drawImage(shape.image, _sx, _sy, shape.w, shape.h);
-        _sy += shape.h;
+        context.drawImage(
+          shape.image,
+          shape.sx, shape.sy,
+          shape.sWidth, shape.sHeight,
+          _sx, _sy,
+          shape.dWidth, shape.dHeight
+        );
+        _sy += shape.dHeight;
       }
-      _sx += shape.w;
+      _sx += shape.dWidth;
     }
   }
 }
-
 
 const drawFrom = (x: number, w: number): number => {
   const d = Math.abs(x) % w;

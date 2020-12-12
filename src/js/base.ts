@@ -14,9 +14,19 @@ export interface IDirection {
 }
 
 export interface IShape {
-  w: number;
-  h: number;
   image: any;
+  sx: number;
+  sy: number;
+  sWidth: number;
+  sHeight: number;
+  dWidth: number;
+  dHeight: number;
+}
+
+export interface IAnimatedShape extends IShape {
+  hasSprite(): boolean;
+  nextSprite(): IAnimatedShape;
+  reset(): IAnimatedShape;
 }
 
 export interface ICharacter {
@@ -97,13 +107,66 @@ export class Direction implements IDirection {
 }
 
 export class Shape implements IShape {
-  public w: number;
-  public h: number;
   public image: any;
+  public sx: number;
+  public sy: number;
+  public sWidth: number;
+  public sHeight: number;
+  public dWidth: number;
+  public dHeight: number;
 
-  constructor(image: any, w: number, h: number) {
-    this.w = w;
-    this.h = h;
+  constructor(image: any, sx: number, sy: number, sWidth: number, sHeight: number, dWidth: number, dHeight: number) {
     this.image = image;
+    this.sx = sx;
+    this.sy = sy;
+    this.sWidth = sWidth;
+    this.sHeight = sHeight;
+    this.dWidth = dWidth;
+    this.dHeight = dHeight;
+  }
+
+  public static fromImage(image: any, width: number, height: number) {
+    return new Shape(
+      image, 0, 0, image.width, image.height,  width, height
+    );
+  }
+}
+
+export class AnimatedShape implements IShape {
+  public image: any;
+  public sx: number;
+  public sy: number;
+  public sWidth: number;
+  public sHeight: number;
+  public dWidth: number;
+  public dHeight: number;
+
+  constructor(image: any, sx: number, sy: number, sWidth: number, sHeight: number, dWidth: number, dHeight: number) {
+    this.image = image;
+    this.sx = sx;
+    this.sy = sy;
+    this.sWidth = sWidth;
+    this.sHeight = sHeight;
+    this.dWidth = dWidth;
+    this.dHeight = dHeight;
+  }
+
+  public hasSprite() {
+    return this.sy < this.image.height;
+  }
+
+  public nextSprite() {
+    this.sx += this.sWidth;
+    if (this.sx <= this.image.width) {
+      this.sx = 0;
+      this.sy += this.sHeight;
+    }
+    return this;
+  }
+
+  public reset() {
+    this.sx = 0;
+    this.sy = 0;
+    return this;
   }
 }

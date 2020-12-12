@@ -8,7 +8,7 @@ interface IPoint {
 }
 
 const getCharacterPoints = (character: ICharacter): IPoint[] => {
-  let { w, h } = character.shape;
+  let { dWidth: w, dHeight: h } = character.shape;
   let { x, y } = character.position;
   let { alpha } = character.direction;
   w = w / 2;

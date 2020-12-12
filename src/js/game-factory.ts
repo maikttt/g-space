@@ -13,15 +13,15 @@ export default function makeGame(
 ): Game {
   const display = new Display(context, new Position(0, 0));
   const landscape = new Landscape(
-    new Shape(landscapeData.img, landscapeData.w, landscapeData.h)
+    Shape.fromImage(landscapeData.img, landscapeData.w, landscapeData.h)
   );
   const defender = new Defender(
     new Position(defenderData.x, defenderData.y),
     new Direction(0),
-    new Shape(defenderData.img, defenderData.w, defenderData.h),
+    Shape.fromImage(defenderData.img, defenderData.w, defenderData.h),
     new Gun(
       bulletData.speed,
-      new Shape(bulletData.img, bulletData.w, bulletData.h)
+      Shape.fromImage(bulletData.img, bulletData.w, bulletData.h)
     )
   );
   const monsters = makeMonsters(monsterData, defender);
@@ -31,11 +31,9 @@ export default function makeGame(
 function makeMonsters(monsterData: any[], goal: any): Monster[] {
   return [
     new Monster(
-      new Position(
-        -100, 0
-      ),
+      new Position(-100, 0),
       new Direction(-Math.PI),
-      new Shape(monsterData[0].img, 50, 50),
+      Shape.fromImage(monsterData[0].img, monsterData[0].w, monsterData[0].h),
       (t: number, p: Position): Position => {
         return new Position(p.x, p.y);
       },
@@ -47,12 +45,12 @@ function makeMonsters(monsterData: any[], goal: any): Monster[] {
         random(-200, 200), random(-200, 200)
       ),
       new Direction(0),
-      new Shape(m.img, m.w, m.h),
+      Shape.fromImage(m.img, m.w, m.h),
       moveToLaw(goal),
     );
     // const law =  circleMoveRow(m.x, m.y, m.r);
     // return new Monster(
-    //   law(0, new Position(0, 0)), law, new Shape(m.img, m.w, m.h)
+    //   law(0, new Position(0, 0)), law, Shape.fromImage(m.img, m.w, m.h)
     // );
   });
 }

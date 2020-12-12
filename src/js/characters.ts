@@ -1,4 +1,7 @@
-import { IPosition, IDirection, IShape, IDefender, IMonster, IGun, MoveLaw, IBullet, Position, Direction, Shape } from './base';
+import {
+  IPosition, IDirection, IShape, IDefender,
+  IMonster, IGun, MoveLaw, IBullet, Position, Direction
+} from './base';
 
 export class Defender implements IDefender {
   public position: IPosition;
