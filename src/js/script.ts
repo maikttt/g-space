@@ -3,12 +3,12 @@ import makeGame from './game-factory';
 const canvas = document.getElementById('display') as HTMLCanvasElement;
 const context = canvas.getContext('2d');
 
-const KEY_MAP = {
-  KeyW: 'moveUp',
-  KeyS: 'moveDown',
-  KeyA: 'moveLeft',
-  KeyD: 'moveRight',
-  Space: 'move',
+const KEY_MAP: { [name: string]: string } = {
+  'KeyW': 'moveUp',
+  'KeyS': 'moveDown',
+  'KeyA': 'moveLeft',
+  'KeyD': 'moveRight',
+  'Space': 'move',
 };
 
 Promise.all([
@@ -19,26 +19,26 @@ Promise.all([
   'dist/img/monster-1.png',
   'dist/img/monster-2.png',
 ].map((src) => loadImage(src)))
-.then(([field, defender, bullet, ...monsters]) => {
-  field = {
-    img: field,
-    w: field.width,
-    h: field.height,
+.then(([fieldImg, defenderImg, bulletImg, ...monstersImgs]: HTMLImageElement[]) => {
+  const field = {
+    img: fieldImg,
+    w: fieldImg.width,
+    h: fieldImg.height,
   };
-  defender = {
-    img: defender,
+  const defender = {
+    img: defenderImg,
     w: 60,
     h: 60,
     x: 0,
     y: 0
   };
-  bullet = {
-    img: bullet,
-    w: bullet.width,
-    h: bullet.height,
+  const bullet = {
+    img: bulletImg,
+    w: bulletImg.width,
+    h: bulletImg.height,
     speed: 16,
   }
-  monsters = monsters.map((img) => {
+  const monsters = monstersImgs.map((img) => {
     return {
       img, w: 60, h: 60,
       x: random(400) - 200,
@@ -62,14 +62,14 @@ Promise.all([
   app.redraw();
   */
   document.body.addEventListener('keydown', function(event) {
-    const action = event.key ? KEY_MAP[event.code] : undefined;
+    const action = event.key ? KEY_MAP[event.code] : '';
     if (action) {
       game.exec(action);
     }
   });
 
-  canvas.addEventListener('mousemove', function(event) {
-    game.exec('defenderChangeDir', event.layerX, event.layerY);
+  canvas.addEventListener('mousemove', function(event: MouseEvent) {
+    game.exec('defenderChangeDir', event.offsetX, event.offsetY);
   });
   canvas.addEventListener('click', function(event) {
     game.exec('shut');

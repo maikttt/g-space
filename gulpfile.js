@@ -6,16 +6,16 @@ const sync = require('browser-sync').create();
 const del = require('del');
 const webpack = require('webpack-stream');
 
-function js() {
+const js = () => {
   return src('./src/js/**.ts')
   .pipe(webpack(
-    require('./webpack.config.js') 
+    require('./webpack.config.js')
   ))
   .pipe(dest('dist/js'))
   ;
 }
 
-function scss() {
+const scss = () => {
   return src('src/scss/**.scss')
   .pipe(sass())
   .pipe(autoprefix({
@@ -26,20 +26,26 @@ function scss() {
   ;
 }
 
-function clear() {
+const images = () => {
+  return src(['src/img/**/*'])
+  .pipe(dest('dist/img'))
+  ;
+}
+
+const clear = () => {
   return del('dist/css');
 }
 
-function build() {
-  return series(clear, scss, js);
-}
+const build = series(clear, scss, js, images);
 
-function serve() {
+const serve = () => {
   sync.init({
     server: './',
   });
-  watch('./src/scss/**.scss', series(scss)).on('change', sync.reload)
-  watch('./src/js/**.ts', series(js)).on('change', sync.reload)
+  watch('./src/scss/**.scss', series(scss)).on('change', sync.reload);
+  watch('./src/js/**.ts', series(js)).on('change', sync.reload);
 }
 
-module.exports = { js, scss, build, serve };
+module.exports = {
+  js, scss, images, serve, build,
+};

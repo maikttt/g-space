@@ -57,11 +57,11 @@ function makeMonsters(monsterData: any[], goal: any): Monster[] {
 
 function moveToLaw(goal: any): MoveLaw {
   const speed = 4; // random(2, 10);
-  return (t: number, p: Position): Position {
+  return (t: number, p: Position): Position => {
     const dir_x = goal.position.x - p.x;
     const dir_y = goal.position.y - p.y;
     const dir_m = Math.sqrt(dir_x ** 2 + dir_y ** 2);
-    if (dir_m === 0 || speed === 0) {
+    if (dir_m === 0) {
       return new Position(p.x, p.y);
     }
     return new Position(
