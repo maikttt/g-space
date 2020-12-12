@@ -1,7 +1,7 @@
 {
-  "name": "crimsonland",
+  "name": "g-space",
   "version": "1.0.0",
-  "description": "Crimsonland game",
+  "description": "G-space game",
   "main": "index.js",
   "scripts": {
     "build:js": "gulp js",
