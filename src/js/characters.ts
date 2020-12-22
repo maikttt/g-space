@@ -1,6 +1,6 @@
 import {
-  IPosition, IDirection, IShape, IDefender,
-  IMonster, IGun, MoveLaw, IBullet, Position, Direction
+  IPosition, IDirection, IShape, IExplosion, IDefender,
+  IMonster, IGun, MoveLaw, IBullet, Position, Direction, IAnimatedShape
 } from './base';
 
 export class Defender implements IDefender {
@@ -88,5 +88,17 @@ export class Bullet implements IBullet {
       this.speed * Math.cos(this.direction.alpha),
       this.speed * Math.sin(this.direction.alpha),
     );
+  }
+}
+
+export class Explosion implements IExplosion {
+  public position: IPosition;
+  public shape: IAnimatedShape;
+  public direction: IDirection;
+
+  constructor(position: IPosition, shape: IAnimatedShape, direction: IDirection) {
+    this.position = position;
+    this.shape = shape;
+    this.direction = direction;
   }
 }

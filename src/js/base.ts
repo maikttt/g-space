@@ -70,6 +70,14 @@ export interface IBullet extends ICharacter {
   move(): void;
 }
 
+export interface IExplosion extends ICharacter {
+  shape: AnimatedShape;
+}
+
+export interface IExplosionFactory {
+  explosion(position: IPosition): IExplosion;
+}
+
 export class Position implements IPosition {
   public x: number;
   public y: number;
@@ -157,7 +165,7 @@ export class AnimatedShape implements IShape {
 
   public nextSprite() {
     this.sx += this.sWidth;
-    if (this.sx <= this.image.width) {
+    if (this.image.width <= this.sx) {
       this.sx = 0;
       this.sy += this.sHeight;
     }

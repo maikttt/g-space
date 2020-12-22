@@ -15,11 +15,12 @@ Promise.all([
   'dist/img/field.jpg',
   'dist/img/defender.png',
   'dist/img/defender-bullet.png',
+  'dist/img/explosion.png',
   'dist/img/monster-0.png',
   'dist/img/monster-1.png',
   'dist/img/monster-2.png',
 ].map((src) => loadImage(src)))
-.then(([fieldImg, defenderImg, bulletImg, ...monstersImgs]: HTMLImageElement[]) => {
+.then(([fieldImg, defenderImg, bulletImg, explosion, ...monstersImgs]: HTMLImageElement[]) => {
   const field = {
     img: fieldImg,
     w: fieldImg.width,
@@ -47,7 +48,7 @@ Promise.all([
     };
   });
 
-  const game = makeGame(context, field, defender, monsters, bullet);
+  const game = makeGame(context, field, defender, monsters, bullet, explosion);
   game.run();
 
   /*

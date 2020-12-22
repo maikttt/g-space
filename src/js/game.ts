@@ -1,30 +1,35 @@
+import {
+  IMonster, IDefender, IDisplay, ILandscape, IBullet, IExplosion, IExplosionFactory
+} from './base';
 
-import { IMonster, IDefender, IDisplay, ILandscape, IBullet } from './base';
-import { Bullet } from './characters';
-import { charactersHaveCollision } from './collisions';
+import {
+  charactersHaveCollision
+} from './collisions';
 
 interface IBulletTime {
   bullet: IBullet;
   lunchTime: number;
 }
 
-
 export class Game {
   private display: IDisplay;
   private landscape: ILandscape;
   private defender: IDefender;
   private monsters: IMonster[];
+  private explosionsFactory: IExplosionFactory;
 
+  private explosions: IExplosion[] = [];
   private bullets: IBulletTime[] = [];
   private _run_timer: any = false;
   private delay: number = 50;
   private bulletLifeTime = 2e3; // ms
 
-  constructor(display: IDisplay, landscape: ILandscape, defender: IDefender, monsters: IMonster[]) {
+  constructor(display: IDisplay, landscape: ILandscape, defender: IDefender, monsters: IMonster[], explosionsFactory: IExplosionFactory) {
     this.display = display;
     this.landscape = landscape;
     this.defender = defender;
     this.monsters = monsters;
+    this.explosionsFactory = explosionsFactory;
   }
 
   public exec(event: string, ...args: any) {
@@ -76,6 +81,9 @@ export class Game {
     this.monsters.forEach((monster) => {
       display.drawCharacter(monster);
     });
+    this.explosions.forEach((explosion) => {
+      display.drawCharacter(explosion);
+    });
   }
 
   public redraw() {
@@ -84,7 +92,14 @@ export class Game {
   }
 
   private ticUpdate() {
+    // explostionsUpdate must be before detectCollisions, because
+    // after collsion detection there can be added some new explosions
+    // if we do explosionsUpdate after detectCollisions new explosions
+    // won't show first sprite (explosionUpdate go to next shape's sprite for each expl.)
+
+    this.tic_explosionsUpdate();
     this.tic_detectCollisions();
+
     this.tic_checkBulletsLife();
 
     this.monsters.forEach((monster) => {
@@ -112,6 +127,25 @@ export class Game {
       c_bullets.add(bullet_index);
     });
     this.bullets = this.bullets.filter((_, index) => !c_bullets.has(index));
+    this.monsters = this.monsters.filter((monster, index) => {
+      const exp = c_monsters.has(index);
+      if (exp) {
+        this.explosions.push(
+          this.explosionsFactory.explosion(monster.position)
+        );
+      }
+      return !exp;
+    });
+  }
+
+  private tic_explosionsUpdate() {
+    this.explosions.forEach((explosion) => {
+      explosion.shape.nextSprite();
+    });
+
+    // Maybe we should split this method in 2 methods????
+    // nextSprite and explisionLife ???
+    this.explosions = this.explosions.filter((explosion) => explosion.shape.hasSprite());
   }
 
   public run() {
